@@ -1,6 +1,6 @@
 # NameGame
 
-NameGame is a fun application where users can play a game of coming up with words in different categories that start with a randomly generated letter. The game has several categories, including countries, person names, animals, and more.
+How good are you with words? Let's find out with NameGame - it's like Scrabble, but without the board or the tiles! 😂
 
 ## How to Play
 
