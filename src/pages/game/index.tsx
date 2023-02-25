@@ -111,7 +111,7 @@ const Game = () => {
 		letters[Math.floor(Math.random() * letters.length)];
 
 	const randomize = () => {
-		// setLetter(pickLetter());
+		setLetter(pickLetter());
 		setActive(true);
 	};
 
@@ -123,12 +123,12 @@ const Game = () => {
 
 	useEffect(() => {
 		setOverallPoints(getScore());
-		// let intervalId: NodeJS.Timeout;
+		let intervalId: NodeJS.Timeout;
 
-		// if (!active) {
-		// 	intervalId = setInterval(() => setLetter(pickLetter()), 200);
-		// }
-		// return () => clearInterval(intervalId);
+		if (!active) {
+			intervalId = setInterval(() => setLetter(pickLetter()), 200);
+		}
+		return () => clearInterval(intervalId);
 	}, [active]);
 
 	return (
