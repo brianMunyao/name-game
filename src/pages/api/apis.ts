@@ -31,6 +31,27 @@ export const isCountryValid = (country: string) => {
 export const isAnimalValid = async (animal: string) => {
 	const api = `https://api.api-ninjas.com/v1/animals?name=${animal}`;
 
+	const requestHeaders: HeadersInit = new Headers();
+	requestHeaders.set('X-Api-Key', 'JmuV951xID3roAlguWieDw==e2swOXeUBVSHwLXA');
+
+	// return fetch(api, { headers: requestHeaders })
+	// 	.then((response) => response.json())
+	// 	.then((response) => {
+	// 		if (!response.ok) {
+	// 			return { error: 'Other Errors' };
+	// 		}
+	// 		const filtered = response.filter(
+	// 			(anim: any) => anim.name.toLowerCase() === animal.toLowerCase()
+	// 		);
+	// 		if (filtered.length > 0) {
+	// 			return { data: filtered[0].name };
+	// 		}
+	// 		return { error: 'Not an animal' };
+	// 	})
+	// 	.catch((error) => {
+	// 		return { error: 'Unhandled errors' };
+	// 	});
+
 	try {
 		const requestHeaders: HeadersInit = new Headers();
 		requestHeaders.set(
@@ -44,10 +65,10 @@ export const isAnimalValid = async (animal: string) => {
 			return { error: 'Other Errors' };
 		}
 
-		response = await response.json();
+		const responseData = await response.json();
 
-		const filtered = response.filter(
-			(anim) => anim.name.toLowerCase() === animal.toLowerCase()
+		const filtered = responseData.filter(
+			(anim: any) => anim.name.toLowerCase() === animal.toLowerCase()
 		);
 
 		if (filtered.length > 0) {
