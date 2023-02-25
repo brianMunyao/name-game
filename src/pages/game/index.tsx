@@ -7,7 +7,7 @@ import { BsCheckCircleFill, BsFillXCircleFill } from 'react-icons/bs';
 
 import TopBar from '@/components/TopBar';
 import AppInput from '@/components/AppInput';
-import { isCountryValid } from '../api/apis';
+import { isAnimalValid, isCountryValid } from '../api/apis';
 import AppBtn from '@/components/AppBtn';
 import { capitalize } from '../api/utils';
 import { getScore, saveScore } from '../api/storage';
@@ -47,7 +47,7 @@ interface MarkedVal {
 }
 
 const Game = () => {
-	const [letter, setLetter] = useState('W');
+	const [letter, setLetter] = useState('Y');
 	const [active, setActive] = useState(false);
 	const [gameover, setGameover] = useState(false);
 	const [marked, setMarked] = useState<{ [key: string]: MarkedVal }>({});
@@ -65,16 +65,23 @@ const Game = () => {
 	const formik = useFormik({
 		initialValues: {
 			country: '',
+			animal: '',
 		},
 		onSubmit: async (values) => {
 			setSubmitting(true);
 			const _marked: { [key: string]: MarkedVal } = {};
 			let _score = 0;
 
-			const res = await isCountryValid(values.country);
+			const resCountry = isCountryValid(values.country.trim());
 			_marked['country'] = {
-				correct: res.data || false,
-				value: values.country,
+				correct: resCountry.data ? true : false,
+				value: resCountry.data || values.country,
+			};
+
+			const resAnimal = await isAnimalValid(values.animal.trim());
+			_marked['animal'] = {
+				correct: resAnimal.data ? true : false,
+				value: resAnimal.data || values.animal,
 			};
 
 			Object.keys(_marked).forEach((key) => {
@@ -94,6 +101,9 @@ const Game = () => {
 			country: Yup.string()
 				.trim()
 				.matches(regex, `Must start with ${letter}`),
+			animal: Yup.string()
+				.trim()
+				.matches(regex, `Must start with ${letter}`),
 		}),
 	});
 
@@ -101,7 +111,7 @@ const Game = () => {
 		letters[Math.floor(Math.random() * letters.length)];
 
 	const randomize = () => {
-		setLetter(pickLetter());
+		// setLetter(pickLetter());
 		setActive(true);
 	};
 
@@ -113,12 +123,12 @@ const Game = () => {
 
 	useEffect(() => {
 		setOverallPoints(getScore());
-		let intervalId: NodeJS.Timeout;
+		// let intervalId: NodeJS.Timeout;
 
-		if (!active) {
-			intervalId = setInterval(() => setLetter(pickLetter()), 200);
-		}
-		return () => clearInterval(intervalId);
+		// if (!active) {
+		// 	intervalId = setInterval(() => setLetter(pickLetter()), 200);
+		// }
+		// return () => clearInterval(intervalId);
 	}, [active]);
 
 	return (
@@ -165,6 +175,16 @@ const Game = () => {
 								onBlur={formik.handleBlur}
 								error={formik.errors.country}
 								touched={formik.touched.country}
+							/>
+
+							<AppInput
+								label="Animal"
+								id="animal"
+								value={formik.values.animal}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								error={formik.errors.animal}
+								touched={formik.touched.animal}
 							/>
 							<AppBtn
 								type="submit"
@@ -241,6 +261,8 @@ const Container = styled.main<StyledProps>`
 		}
 
 		.content {
+			position: ${({ gameover }) => (gameover ? 'absolute' : 'relative')};
+			pointer-events: ${({ gameover }) => (gameover ? 'none' : 'all')};
 			flex: ${({ gameover }) => (gameover ? 0 : 1)};
 			opacity: ${({ gameover }) => (gameover ? 0 : 1)};
 
@@ -289,6 +311,8 @@ const Container = styled.main<StyledProps>`
 		.gameover {
 			align-items: center;
 			justify-content: center;
+			pointer-events: ${({ gameover }) => (gameover ? 'all' : 'none')};
+			position: ${({ gameover }) => (gameover ? 'relative' : 'absolute')};
 			flex: ${({ gameover }) => (gameover ? 1 : 0)};
 			opacity: ${({ gameover }) => (gameover ? 1 : 0)};
 
@@ -297,13 +321,14 @@ const Container = styled.main<StyledProps>`
 				align-items: center;
 				justify-content: center;
 				flex-direction: column;
-				padding: 10px;
+				/* padding: 10px; */
 				.answers {
 					margin: 30px 0;
 					.answer {
 						display: flex;
 						align-items: center;
 						font-size: 21px;
+						padding: 10px 0;
 						svg {
 							margin-right: 10px;
 						}
