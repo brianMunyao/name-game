@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
@@ -9,8 +9,9 @@ import TopBar from '@/components/TopBar';
 import AppInput from '@/components/AppInput';
 import { isAnimalValid, isCountryValid } from '../api/apis';
 import AppBtn from '@/components/AppBtn';
-import { capitalize } from '../api/utils';
+import { capitalize, formatTime } from '../api/utils';
 import { getScore, saveScore } from '../api/storage';
+import Link from 'next/link';
 
 const letters = [
 	'A',
@@ -46,10 +47,17 @@ interface MarkedVal {
 	value: string;
 }
 
+interface FormValues {
+	country: string;
+	animal: string;
+}
+
 const Game = () => {
 	const [letter, setLetter] = useState('Y');
 	const [active, setActive] = useState(false);
+	const [timer, setTimer] = useState(10);
 	const [gameover, setGameover] = useState(false);
+	const [timeRanOut, setTimeRanOut] = useState(false);
 	const [marked, setMarked] = useState<{ [key: string]: MarkedVal }>({});
 	const [currScore, setCurrScore] = useState(0);
 
@@ -61,6 +69,10 @@ const Game = () => {
 	const regex = new RegExp(
 		`^[${letter.toLowerCase()}${letter.toUpperCase()}].*`
 	);
+
+	// const handleSubmit = (values:FormValues)=>{
+
+	// }
 
 	const formik = useFormik({
 		initialValues: {
@@ -91,6 +103,7 @@ const Game = () => {
 			const _overall = getScore() + _score;
 			saveScore(_overall);
 
+			setActive(false);
 			setGameover(true);
 			setMarked(_marked);
 			setCurrScore(_score);
@@ -115,21 +128,46 @@ const Game = () => {
 		setActive(true);
 	};
 
+	const handleTimeRanOut = useCallback(() => {
+		setTimeRanOut(true);
+		formik.handleSubmit();
+	}, [formik]);
+
 	const restartGame = () => {
 		setGameover(false);
 		setActive(false);
+		setTimeRanOut(false);
+		setTimer(10);
 		formik.resetForm();
 	};
 
 	useEffect(() => {
 		setOverallPoints(getScore());
-		let intervalId: NodeJS.Timeout;
+		let intervalLetter: NodeJS.Timeout;
 
 		if (!active) {
-			intervalId = setInterval(() => setLetter(pickLetter()), 200);
+			intervalLetter = setInterval(() => setLetter(pickLetter()), 200);
 		}
-		return () => clearInterval(intervalId);
+
+		return () => clearInterval(intervalLetter);
 	}, [active]);
+
+	useEffect(() => {
+		let intervalTimer: NodeJS.Timeout;
+
+		if (active) {
+			intervalTimer = setInterval(() => {
+				if (timer !== 0) {
+					setTimer(timer - 1);
+				} else {
+					clearInterval(intervalTimer);
+					handleTimeRanOut();
+				}
+			}, 1000);
+		}
+
+		return () => clearInterval(intervalTimer);
+	}, [active, timer]);
 
 	return (
 		<>
@@ -147,7 +185,7 @@ const Game = () => {
 			</Head>
 
 			<Container active={active} gameover={gameover}>
-				<TopBar score={overallPoints} />
+				<TopBar timer={formatTime(timer)} score={overallPoints} />
 				<div className="active-gameover">
 					<div className="content">
 						<div className="letter">{letter}</div>
@@ -170,6 +208,7 @@ const Game = () => {
 							<AppInput
 								label="Country"
 								id="country"
+								disabled={submitting}
 								value={formik.values.country}
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
@@ -180,6 +219,7 @@ const Game = () => {
 							<AppInput
 								label="Animal"
 								id="animal"
+								disabled={submitting}
 								value={formik.values.animal}
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
@@ -196,6 +236,8 @@ const Game = () => {
 					</div>
 					<div className="gameover">
 						<div className="gameover-inner">
+							<p className="oops">⏲️ Oops! Time Ran Out</p>
+
 							<h2 className="go-title">
 								You scored {currScore} points!
 							</h2>
@@ -229,6 +271,16 @@ const Game = () => {
 						</div>
 					</div>
 				</div>
+
+				<footer>
+					Designed by{' '}
+					<Link
+						href="https://github.com/brianMunyao/"
+						target="_blank"
+						rel="noopener noreferrer">
+						brianMunyao
+					</Link>
+				</footer>
 			</Container>
 		</>
 	);
@@ -322,6 +374,13 @@ const Container = styled.main<StyledProps>`
 				justify-content: center;
 				flex-direction: column;
 				/* padding: 10px; */
+
+				.oops {
+					font-style: italic;
+					color: #525252;
+					margin-bottom: 10px;
+				}
+
 				.answers {
 					margin: 30px 0;
 					.answer {
@@ -343,6 +402,18 @@ const Container = styled.main<StyledProps>`
 					}
 				}
 			}
+		}
+	}
+	footer {
+		display: ${({ gameover }) => (gameover ? 'block' : 'none')};
+		text-align: center;
+		padding: 5px 0 10px;
+		font-weight: 300;
+		font-size: 13px;
+		letter-spacing: 0.3px;
+		/* font-style: italic; */
+		a {
+			color: dodgerblue;
 		}
 	}
 `;

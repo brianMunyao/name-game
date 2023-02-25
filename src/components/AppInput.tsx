@@ -6,6 +6,7 @@ interface Props {
 	type?: string;
 	id: string;
 	value: string;
+	disabled?: boolean;
 	error?: string;
 	touched?: boolean;
 	autoComplete?: 'on' | 'off';
@@ -20,6 +21,7 @@ const AppInput = ({
 	value,
 	error,
 	touched,
+	disabled,
 	autoComplete = 'off',
 	onChange,
 	onBlur,
@@ -28,11 +30,13 @@ const AppInput = ({
 		<Container>
 			<p className="input-label">{label}</p>
 			<input
+				disabled={disabled}
 				value={value}
 				type={type}
 				id={id}
 				autoComplete={autoComplete}
 				className={'input-text'}
+				style={{ cursor: disabled ? 'not-allowed' : 'initial' }}
 				onChange={onChange}
 				onBlur={onBlur}
 			/>

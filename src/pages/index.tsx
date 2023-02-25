@@ -1,7 +1,13 @@
+import AppBtn from '@/components/AppBtn';
 import Head from 'next/head';
 import Link from 'next/link';
 import styled from 'styled-components';
 
+const sentences = [
+	'Ready to put your vocabulary to the test?',
+	'Embark on a journey of words and fun!',
+	'Unleash your word skills today!',
+];
 export default function Home() {
 	return (
 		<>
@@ -23,10 +29,16 @@ export default function Home() {
 					<h2>Welcome to</h2>
 					<h1>NameGame</h1>
 
-					<p className="quote">Unleash your word skills today!</p>
+					<p className="quote">
+						{
+							sentences[
+								Math.floor(Math.random() * sentences.length)
+							]
+						}
+					</p>
 
 					<Link href={'/game'}>
-						<button>Start</button>
+						<AppBtn type="button" text="LET'S BEGIN" />
 					</Link>
 				</div>
 			</Container>
