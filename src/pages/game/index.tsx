@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -11,7 +12,7 @@ import { isAnimalValid, isCountryValid } from '../api/apis';
 import AppBtn from '@/components/AppBtn';
 import { capitalize, formatTime } from '../api/utils';
 import { getScore, saveScore } from '../api/storage';
-import Link from 'next/link';
+// import FeedBack from '@/components/FeedBack';
 
 const letters = [
 	'A',
@@ -47,11 +48,6 @@ interface MarkedVal {
 	value: string;
 }
 
-interface FormValues {
-	country: string;
-	animal: string;
-}
-
 const Game = () => {
 	const [letter, setLetter] = useState('Y');
 	const [active, setActive] = useState(false);
@@ -63,16 +59,11 @@ const Game = () => {
 
 	const [overallPoints, setOverallPoints] = useState(0);
 
-	// const [formError, setFormError] = useState('');
 	const [submitting, setSubmitting] = useState(false);
 
 	const regex = new RegExp(
 		`^[${letter.toLowerCase()}${letter.toUpperCase()}].*`
 	);
-
-	// const handleSubmit = (values:FormValues)=>{
-
-	// }
 
 	const formik = useFormik({
 		initialValues: {
@@ -236,7 +227,9 @@ const Game = () => {
 					</div>
 					<div className="gameover">
 						<div className="gameover-inner">
-							<p className="oops">⏲️ Oops! Time Ran Out</p>
+							{timeRanOut && (
+								<p className="oops">⏲️ Oops! Time Ran Out</p>
+							)}
 
 							<h2 className="go-title">
 								You scored {currScore} points!
@@ -282,6 +275,8 @@ const Game = () => {
 					</Link>
 				</footer>
 			</Container>
+
+			{/* <FeedBack /> */}
 		</>
 	);
 };

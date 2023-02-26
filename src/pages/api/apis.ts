@@ -1,64 +1,27 @@
 import { countries } from './data';
 
 export const isCountryValid = (country: string) => {
-	// const api = `https://restcountries.com/v3.1/name/${country}?fullText=true`;
-
-	const res = countries.filter(
-		(val) => country.toLowerCase() === val.toLowerCase()
+	const index = countries.findIndex(
+		(val) => val.toLowerCase() === country.toLowerCase()
 	);
 
-	if (res.length > 0) {
-		return { data: res[0] };
-	}
-	return { error: 'Not a country' };
+	if (index !== -1) return { data: countries[index] };
 
-	// try {
-	// 	const response = await fetch(api);
-	// 	if (!response.ok) {
-	// 		if (response.status === 404) {
-	// 			return { error: 'Country Invalid' };
-	// 		} else {
-	// 			return { error: 'Other errors' };
-	// 		}
-	// 	}
-	// 	const res = await response.json();
-	// 	return { data: true, res };
-	// } catch (e) {
-	// 	return { error: 'Unhandled errors', e };
-	// }
+	return { error: 'Not a country' };
 };
 
 export const isAnimalValid = async (animal: string) => {
+	if (animal === '') return { error: 'Not an animal' };
+
 	const api = `https://api.api-ninjas.com/v1/animals?name=${animal}`;
 
 	const requestHeaders: HeadersInit = new Headers();
-	requestHeaders.set('X-Api-Key', 'JmuV951xID3roAlguWieDw==e2swOXeUBVSHwLXA');
-
-	// return fetch(api, { headers: requestHeaders })
-	// 	.then((response) => response.json())
-	// 	.then((response) => {
-	// 		if (!response.ok) {
-	// 			return { error: 'Other Errors' };
-	// 		}
-	// 		const filtered = response.filter(
-	// 			(anim: any) => anim.name.toLowerCase() === animal.toLowerCase()
-	// 		);
-	// 		if (filtered.length > 0) {
-	// 			return { data: filtered[0].name };
-	// 		}
-	// 		return { error: 'Not an animal' };
-	// 	})
-	// 	.catch((error) => {
-	// 		return { error: 'Unhandled errors' };
-	// 	});
+	requestHeaders.set(
+		'X-Api-Key',
+		process.env.NEXT_PUBLIC_API_NINJAS_API_KEY || ''
+	);
 
 	try {
-		const requestHeaders: HeadersInit = new Headers();
-		requestHeaders.set(
-			'X-Api-Key',
-			'JmuV951xID3roAlguWieDw==e2swOXeUBVSHwLXA'
-		);
-
 		let response = await fetch(api, { headers: requestHeaders });
 
 		if (!response.ok) {
@@ -79,3 +42,24 @@ export const isAnimalValid = async (animal: string) => {
 		return { error: 'Unhandled errors' };
 	}
 };
+
+// import sendgrid from '@sendgrid/mail';
+// sendgrid.setApiKey(process.env.NEXT_PUBLIC_SEND_GRID_API_KEY || '');
+
+// export const sendMail = async (text: string) => {
+// 	const msg = {
+// 		to: 'brianmunyao6@gmail.com', // Change to your recipient
+// 		from: 'brianmunyao6@gmail.com', // Change to your verified sender
+// 		subject: 'Sending with SendGrid is Fun',
+// 		text: 'and easy to do anywhere, even with Node.js',
+// 		html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+// 	};
+
+// 	try {
+// 		const res = await sendgrid.send(msg);
+
+// 		return res;
+// 	} catch (e) {
+// 		return e;
+// 	}
+// };

@@ -1,7 +1,8 @@
-import AppBtn from '@/components/AppBtn';
 import Head from 'next/head';
 import Link from 'next/link';
 import styled from 'styled-components';
+
+import AppBtn from '@/components/AppBtn';
 
 const sentences = [
 	'Ready to put your vocabulary to the test?',

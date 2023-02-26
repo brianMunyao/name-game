@@ -3,9 +3,13 @@ export const saveScore = (score: number) => {
 };
 
 export const getScore = () => {
-	const score = localStorage.getItem('@score');
-	if (score) {
-		return Number(score);
+	try {
+		const score = localStorage.getItem('@score');
+		if (score) {
+			return Number(score);
+		}
+		return 0;
+	} catch (e) {
+		return 0;
 	}
-	return 0;
 };

@@ -1,24 +1,35 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 interface Props {
-	text: string;
+	text?: string;
 	disabled?: boolean;
+	classCon?: string;
 	className?: string;
+	children?: ReactNode | ReactNode[];
 	type?: 'button' | 'submit' | 'reset';
 	onClick?: () => void;
 }
 
-const AppBtn = ({ text, disabled, className, type, onClick }: Props) => {
+const AppBtn = ({
+	text,
+	disabled,
+	children,
+	classCon,
+	className,
+	type,
+	onClick,
+}: Props) => {
+	const frontClass = `button-82-front text ${className}`;
 	return (
 		<Btn
-			className={className}
 			disabled={disabled}
+			className={classCon}
 			type={type}
 			onClick={onClick}>
 			<span className="button-82-shadow"></span>
 			<span className="button-82-edge"></span>
-			<span className="button-82-front text">{text}</span>
+			<span className={frontClass}>{children || text}</span>
 		</Btn>
 	);
 };
@@ -73,13 +84,6 @@ const Btn = styled.button`
 		transform: translateY(-4px);
 		transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
 	}
-	/* @media (min-width: 768px) {
-		.button-82-front {
-			font-size: 1.25rem;
-			padding: 12px 42px;
-		}
-	} */
-
 	&:hover {
 		filter: brightness(110%);
 		-webkit-filter: brightness(110%);
@@ -111,19 +115,17 @@ const Btn = styled.button`
 	&:disabled .button-82-front {
 		transform: translateY(-2px);
 		transition: transform 34ms;
-		background: #787878;
+		background: #8d8d8d;
 	}
 
 	&:disabled .button-82-shadow {
 		transform: translateY(1px);
 		transition: transform 34ms;
-		background: linear-gradient(
-			to left,
-			#292929 0%,
-			#515151 8%,
-			#515151 92%,
-			#292929 100%
-		);
+		opacity: 0;
+	}
+	&:disabled .button-82-edge {
+		transform: translateY(1px);
+		transition: transform 34ms;
 		opacity: 0;
 	}
 `;
