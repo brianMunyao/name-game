@@ -220,7 +220,7 @@ const Game = () => {
 							<AppBtn
 								type="submit"
 								text="Submit"
-								className="submit-btn"
+								classCon="submit-btn"
 								disabled={submitting}
 							/>
 						</form>
