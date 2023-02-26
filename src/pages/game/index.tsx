@@ -12,7 +12,6 @@ import { isAnimalValid, isCountryValid } from '../api/apis';
 import AppBtn from '@/components/AppBtn';
 import { capitalize, formatTime } from '../api/utils';
 import { getScore, saveScore } from '../api/storage';
-// import FeedBack from '@/components/FeedBack';
 
 const letters = [
 	'A',
